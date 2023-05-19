@@ -3,6 +3,7 @@
     "@rocketseat/eslint-config/node"
   ],
   "rules": {
-    "endOfLine": "off"
+    "endOfLine": "off",
+    "camelCase": "off"
   }
 }
