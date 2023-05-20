@@ -1,5 +1,14 @@
 import { StatusBar } from 'expo-status-bar'
 import { ImageBackground, Text, TouchableOpacity, View } from 'react-native'
+import { BaiJamjuree_700Bold } from '@expo-google-fonts/bai-jamjuree'
+import { styled } from 'nativewind'
+import { useRouter } from 'expo-router'
+import { useAuthRequest, makeRedirectUri } from 'expo-auth-session'
+import React, { useEffect } from 'react'
+import { api } from '../src/lib/api'
+import blurBg from '../src/assets/bg-blur.png'
+import Stripes from '../src/assets/stripes.svg'
+import NLWLogo from '../src/assets/nlw-spacetime-logo.svg'
 import * as SecureStore from 'expo-secure-store'
 
 import {
@@ -7,16 +16,6 @@ import {
   Roboto_400Regular,
   Roboto_700Bold,
 } from '@expo-google-fonts/roboto'
-
-import { BaiJamjuree_700Bold } from '@expo-google-fonts/bai-jamjuree'
-
-import blurBg from './src/assets/bg-blur.png'
-import Stripes from './src/assets/stripes.svg'
-import NLWLogo from './src/assets/nlw-spacetime-logo.svg'
-import { styled } from 'nativewind'
-import { useAuthRequest, makeRedirectUri } from 'expo-auth-session'
-import { useEffect } from 'react'
-import { api } from './src/lib/api'
 
 const StyledStripes = styled(Stripes)
 
@@ -27,36 +26,38 @@ const discovery = {
 };
 
 export default function App() {
+  const router = useRouter()
   const [hasLoadedFonts] = useFonts({
     Roboto_400Regular,
     Roboto_700Bold,
     BaiJamjuree_700Bold,
   })
 
-  const [response, signInWithGitHub] = useAuthRequest(
+  const [request, response, signInWithGithub] = useAuthRequest(
     {
       clientId: '6dd9603a29aa058a62e3',
       scopes: ['identity'],
-      redirectUri: makeRedirectUri({
-        scheme: 'nlwspacetime',
-      }),
+      redirectUri: makeRedirectUri({ scheme: 'nlwspacetime' }),
     },
     discovery
-  );  
+  );
+
+  async function handleGithubOAuthCode(code: string){
+   const response = await api.post('/register', {
+      code,
+    })
+    const { token } = response.data
+     await SecureStore.setItemAsync('token', token)
+
+     router.push('/memories')
+  }
   useEffect(() => {
     if (response?.type === 'success') {
-      const { code } = response.params;
-      api.post('/register', {
-        code,
-      }).then(response => {
-        const { token } = response.data
-
-        SecureStore.setItemAsync('token', token)
-      }).catch((err) => {
-        console.log(err)
-      })
+      const { code } = response.params
+      handleGithubOAuthCode(code)
     }
-  }, [response]);
+  }, [response])
+
  
   if (!hasLoadedFonts) {
     return null
@@ -82,11 +83,12 @@ export default function App() {
             quiser) com o mundo!
           </Text>
         </View>
-
+ 
+   
         <TouchableOpacity
           activeOpacity={0.7}
           className="rounded-full bg-green-500 px-5 py-2"
-          onPress={() => signInWithGitHub()}
+          onPress={() => signInWithGithub()}
         >
           <Text className="font-alt text-sm uppercase text-black">
             Cadastrar lembrança
