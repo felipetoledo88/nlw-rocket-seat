@@ -46,7 +46,8 @@ export default function Layout() {
         headerShown: false, 
         contentStyle: {backgroundColor: 'transparent'}
         }}>
-          <Stack.Screen name="index" redirect={isUserAuthenticated}/>          
+          <Stack.Screen name="index" redirect={isUserAuthenticated}/> 
+          <Stack.Screen name="new"/>           
           <Stack.Screen name="memories"/>  
       </Stack>
       </ImageBackground>
