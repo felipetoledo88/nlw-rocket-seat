@@ -12,7 +12,6 @@ export async function GET(request: NextRequest) {
   })
 
   const { token } = registerResponse.data
-  console.log("🚀 ~ file: route.ts:15 ~ GET ~ token:", token)
 
   const redirectURL = redirectTo ?? new URL('/', request.url)
 
