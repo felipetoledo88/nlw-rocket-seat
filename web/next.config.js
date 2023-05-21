@@ -3,7 +3,7 @@ const nextConfig = {
 images: {
   domains: [
     'avatars.githubusercontent.com',
-    '192.168.18.21'
+    '192.168.18.00'
   ]
 }
 }
